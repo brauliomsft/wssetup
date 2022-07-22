@@ -11,14 +11,21 @@ Import-Module Hyper-V
 #Set Environment Variables
 $VMName = "Ubuntu"
 $vhdpath = "C:\VMs\Ubuntu.vhdx"
+$NATSwitchName = "NATSwitch"
 
-#Check vSwitch
-$netadapter = Get-NetAdapter -physical | where status -eq "up"
-Write-Host "Creating Virtual Switch using" $netadapter.Name "Adapter"
-New-VMSwitch -Name "External Network" -NetAdapterName $netadapter.Name -AllowManagementOS:$true
+#Check vSwitch with External vSwitch
+#$netadapter = Get-NetAdapter -physical | where status -eq "up"
+#Write-Host "Creating Virtual Switch using" $netadapter.Name "Adapter"
+#New-VMSwitch -Name "External Network" -NetAdapterName $netadapter.Name -AllowManagementOS:$true
+
+#Creating a Internal vSwitch with NAT
+New-VMSwitch -Name $NATSwitchName -SwitchType Internal
+New-NetIPAddress -IPAddress 192.168.50.1 -PrefixLength 24 -InterfaceAlias "vEthernet (NATSwitch)"
+New-NetNat -Name NAT -InternalIPInterfaceAddressPrefix 192.168.50.0/24
 
 #Create VM
-New-VM -Name $vmname -MemoryStartupBytes 16GB -VHDPath $vhdpath
+New-VM -Name $vmname -MemoryStartupBytes 16GB -Generation 2 -VHDPath $vhdpath
+Set-VMFirmware -VMName $VMName -EnableSecureBoot Off
 
 
 #Query Device Location
@@ -50,7 +57,7 @@ Dismount-VMHostAssignableDevice -force -LocationPath $locationpath
 #Mount GPU to VM
 Write-Host "Mountin GPU to VM"
 Add-VMAssignableDevice -LocationPath $locationPath -VMName $VMName
-Get-VMNetworkAdapter -VMName $VMName | Connect-VMNetworkAdapter -SwitchName "External Network"
+Get-VMNetworkAdapter -VMName $VMName | Connect-VMNetworkAdapter -SwitchName $NATSwitchName
 
 
 #Start VM
