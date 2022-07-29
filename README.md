@@ -4,7 +4,7 @@ This repo explains the step-by-step to setup a working environment for the CV Pr
 
 The following diagram explains the architecture of the current solution:
 
-XXXX DIAGRAM
+!(images/architecture.jpg)
 
 There are three main steps to setup this environment
 
