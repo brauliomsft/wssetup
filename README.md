@@ -46,7 +46,7 @@ This is the path of the VHD file that was downloaded in the previous step:
 
 During the execution of the script, an alert will show asking for permission to unmount the GPU from the host.
 
-XXXXX IMAGE OF ALERT
+![enter image description here](images/GPU%20Warning.jpg)
 
 The script creates an Internal Virtual Switch and configures a NAT rule to provide Internet access to the Ubuntu VM. 
 
